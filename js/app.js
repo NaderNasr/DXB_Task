@@ -17,42 +17,64 @@ function init() {
   // Set the background color
   scene.background = new THREE.Color( 0x8FBCD4 );
 
-  // set up the options for a perspective camera
-  const fov = 35; // fov = Field Of View
-  const aspect = container.clientWidth / container.clientHeight;
 
-  const near = 0.1;
-  const far = 100;
-
-  camera = new THREE.PerspectiveCamera( fov, aspect, near, far );
-
-  // every object is initially created at ( 0, 0, 0 )
-  // we'll move the camera back a bit so that we can view the scene
-  camera.position.set( 0, 0, 10 );
-
-  // create a geometry
-  const geometry = new THREE.BoxBufferGeometry( 2, 2, 2 );
+  initCamera();
+  initLights();
+  initMeshes();
+  initRenderer();
 
 
-  // create a purple Standard material
-  const material = new THREE.MeshStandardMaterial( { color: 0x800080 } );
 
-  // create a Mesh containing the geometry and material
-  mesh = new THREE.Mesh( geometry, material );
+}
 
-  // add the mesh to the scene object
-  scene.add( mesh );
+function initCamera() {
+
+  camera = new THREE.PerspectiveCamera(
+    35, // FOV
+    container.clientWidth / container.clientHeight, // aspect
+
+    0.1, // near clipping plane
+    100, // far clipping plane
+  );
+
+  camera.position.set( 2, 0, 10 );
+
+}
+
+function initLights() {
 
   // Create a directional light
- const light = new THREE.DirectionalLight( 0xffffff, 5.0 );
+  const light = new THREE.DirectionalLight( 0xffffff, 3.0 );
 
- // move the light back and up a bit
- light.position.set( 0, 3, 3 );
+  // move the light back and up a bit
+  light.position.set( 0, 3, 3 );
 
- // remember to add the light to the scene
- scene.add( light );
+  // remember to add the light to the scene
+  scene.add( light );
 
-  // create a WebGLRenderer and set its width and height
+}
+
+function initMeshes() {
+
+  const geometry = new THREE.BoxBufferGeometry( 2, 2, 2 );
+
+  const textureLoader = new THREE.TextureLoader();
+
+  const texture = textureLoader.load( 'textures/uv_test_bw.png' );
+  texture.anisotropy = 16;
+
+  const material = new THREE.MeshStandardMaterial( {
+    map: texture,
+  } );
+
+  mesh = new THREE.Mesh( geometry, material );
+
+  scene.add( mesh );
+
+}
+
+function initRenderer() {
+
   renderer = new THREE.WebGLRenderer( { antialias: true } );
   renderer.setSize( container.clientWidth, container.clientHeight );
 
@@ -61,28 +83,15 @@ function init() {
   // add the automatically created <canvas> element to the page
   container.appendChild( renderer.domElement );
 
-
 }
 
 
-
-// function update() {
-//
-//   // increase the mesh's rotation each frame
-//   rotationSpeed = Math.random() * 0.02 + 0.005;
-//
-//   mesh.rotation.z += 0.01;
-//   mesh.rotation.x += 0.01;
-//   mesh.rotation.y += 0.01;
-//
-// }
-
 function update() {
   // call animate recursively
-    mesh.rotation.z += 0.01;
-    mesh.rotation.x += 0.01;
-    mesh.rotation.y += 0.01;
-  requestAnimationFrame( animate );
+  // mesh.rotation.z += 0.01;
+  // mesh.rotation.x += 0.01;
+  // mesh.rotation.y += 0.01;
+  requestAnimationFrame( update );
   renderer.render( scene, camera );
 
   // console.log(requestAnimationFrame)
