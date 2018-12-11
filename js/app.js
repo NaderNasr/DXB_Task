@@ -7,6 +7,8 @@ let mesh;
 
 function init() {
 
+
+
   // Get a reference to the container element that will hold our scene
   container = document.querySelector( '#container' );
 
@@ -51,7 +53,7 @@ function init() {
  scene.add( light );
 
   // create a WebGLRenderer and set its width and height
-  renderer = new THREE.WebGLRenderer();
+  renderer = new THREE.WebGLRenderer( { antialias: true } );
   renderer.setSize( container.clientWidth, container.clientHeight );
 
   renderer.setPixelRatio( window.devicePixelRatio );
@@ -59,28 +61,49 @@ function init() {
   // add the automatically created <canvas> element to the page
   container.appendChild( renderer.domElement );
 
+
 }
 
-function animate() {
 
+
+// function update() {
+//
+//   // increase the mesh's rotation each frame
+//   rotationSpeed = Math.random() * 0.02 + 0.005;
+//
+//   mesh.rotation.z += 0.01;
+//   mesh.rotation.x += 0.01;
+//   mesh.rotation.y += 0.01;
+//
+// }
+
+function update() {
   // call animate recursively
+    mesh.rotation.z += 0.01;
+    mesh.rotation.x += 0.01;
+    mesh.rotation.y += 0.01;
   requestAnimationFrame( animate );
-
-  // increase the mesh's rotation each frame
-  mesh.rotation.z += 0.01;
-  mesh.rotation.x += 0.01;
-  mesh.rotation.y += 0.01;
-  // console.log(requestAnimationFrame)
-
-  // render, or 'create a still image', of the scene
-  // this will create one still image / frame each time the animate
-  // function calls itself
   renderer.render( scene, camera );
 
+  // console.log(requestAnimationFrame)
 }
 
-// call the init function to set everything up
-init();
+function render() {
+  renderer.render( scene, camera );
+}
 
-// then call the animate function to render the scene
-animate();
+function onWindowResize() {
+  // set the aspect ratio to match the new browser window aspect ratio
+  camera.aspect = container.clientWidth / container.clientHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize( container.clientWidth, container.clientHeight );
+  //console.log( 'window resized' );
+}
+
+window.addEventListener( 'resize', onWindowResize );
+
+
+//Calling all Functions
+init();
+render();
+update();
