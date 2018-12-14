@@ -34,7 +34,7 @@ scene.add(backLight);
 
 //Material Loading to Object
 var mtlLoader = new THREE.MTLLoader();
-mtlLoader.setTexturePath('/examples/3d-obj-loader/assets/');
+mtlLoader.setTexturePath('/models/3d-obj-loader/assets/');
 mtlLoader.setPath('/models/3d-obj-loader/assets/');
 mtlLoader.load('r2-d2.mtl', function (materials) {
   materials.preload();
