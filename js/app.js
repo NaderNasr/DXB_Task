@@ -1,129 +1,63 @@
-// // these need to be accessed inside more than one function so we'll declare them first
-// let container;
-// let camera;
-// let controls;
-// let renderer;
-// let scene;
-// let mesh;
-//
-// const mixers = [];
-// const clock = new THREE.Clock();
-// function init() {
-//
-//
-//
-//   // Get a reference to the container element that will hold our scene
-//   container = document.querySelector( '#container' );
-//
-//   // create a Scene
-//   scene = new THREE.Scene();
-//   // Set the background color
-//   scene.background = new THREE.Color( 0x8FBCD4 );
-//
-//
-//   initCamera();
-//   initControls();
-//   initLights();
-//   loadModels();
-//   initRenderer();
-//
-//
-//
-// }
-//
-// //Calling all Functions
-// init();
-// render();
-// update();
-//
-// function initCamera() {
-//
-//   camera = new THREE.PerspectiveCamera(
-//     35, // FOV
-//     container.clientWidth / container.clientHeight, // aspect
-//
-//     0.1, // near clipping plane
-//     100, // far clipping plane
-//   );
-//
-//   camera.position.set( -50, 50, 150 );
-//
-// }
-//
-// function initControls() {
-//
-//   controls = new THREE.OrbitControls( camera, container );
-//
-// }
-//
-// function initLights() {
-//
-//   const ambientLight = new THREE.AmbientLight( 0xffffff, 1 );
-//   scene.add( ambientLight );
-//
-//   const frontLight = new THREE.DirectionalLight( 0xffffff, 1 );
-//   frontLight.position.set( 10, 10, 10 );
-//
-//   const backLight = new THREE.DirectionalLight( 0xffffff, 1 );
-//   backLight.position.set( -10, 10, -10 );
-//
-//   scene.add( frontLight, backLight );
-//
-// }
-//
-// function loadModels() {
-//
-//   const objLoader = new THREE.OBJLoader();
-//       objLoader.setPath('models/');
-//       objLoader.load('monster.obj', function (object) {
-//
-//           scene.add(object);
-//           object.position.y -= 60;
-//
-//       });
-//
-// }
-//
-//
-//
-// function initRenderer() {
-//
-//   renderer = new THREE.WebGLRenderer( { antialias: true } );
-//   renderer.setSize( container.clientWidth, container.clientHeight );
-//
-//   renderer.setPixelRatio( window.devicePixelRatio );
-//
-//   // add the automatically created <canvas> element to the page
-//   container.appendChild( renderer.domElement );
-//
-// }
-//
-//
-// function update() {
-//   // call animate recursively
-//   // mesh.rotation.z += 0.01;
-//   // mesh.rotation.x += 0.01;
-//   // mesh.rotation.y += 0.01;
-//   const delta = clock.getDelta();
-//
-// mixers.forEach( ( mixer ) => { mixer.update( delta ); } );
-//
-//   requestAnimationFrame( update );
-//   renderer.render( scene, camera );
-//
-//   // console.log(requestAnimationFrame)
-// }
-//
-// function render() {
-//   renderer.render( scene, camera );
-// }
-//
-// function onWindowResize() {
-//   // set the aspect ratio to match the new browser window aspect ratio
-//   camera.aspect = container.clientWidth / container.clientHeight;
-//   camera.updateProjectionMatrix();
-//   renderer.setSize( container.clientWidth, container.clientHeight );
-//   //console.log( 'window resized' );
-// }
-//
-// window.addEventListener( 'resize', onWindowResize );
+//Create New Scene
+var scene = new THREE.Scene();
+//Create Camera FOV
+var camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1, 1000 );
+camera.position.z = 200;
+//Render Scene
+var renderer = new THREE.WebGLRenderer();
+renderer.setSize( window.innerWidth, window.innerHeight );
+document.body.appendChild( renderer.domElement );
+
+//Controlling object to orbit around and zoom in
+var controls = new THREE.OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.25;
+controls.enableZoom = true;
+
+//Limit Camera Zooming
+controls.minDistance = 100;
+controls.maxDistance = 200;
+
+//Scene/Object Lighting
+var keyLight = new THREE.DirectionalLight(new THREE.Color('hsl(30, 100%, 75%)'), 1.0);
+keyLight.position.set(-100, 0, 100);
+
+var fillLight = new THREE.DirectionalLight(new THREE.Color('hsl(240, 100%, 75%)'), 0.75);
+fillLight.position.set(100, 0, 100);
+
+var backLight = new THREE.DirectionalLight(0xffffff, 1.0);
+backLight.position.set(100, 0, -100).normalize();
+
+scene.add(keyLight);
+scene.add(fillLight);
+scene.add(backLight);
+
+//Material Loading to Object
+var mtlLoader = new THREE.MTLLoader();
+mtlLoader.setTexturePath('/examples/3d-obj-loader/assets/');
+mtlLoader.setPath('/models/3d-obj-loader/assets/');
+mtlLoader.load('r2-d2.mtl', function (materials) {
+  materials.preload();
+
+  //Object Loader to Scene
+  var objLoader = new THREE.OBJLoader();
+  objLoader.setMaterials(materials);
+  objLoader.setPath('/models/3d-obj-loader/assets/');
+  objLoader.load('r2-d2.obj', function (object) {
+
+    scene.add(object);
+    object.position.y -= 60;
+
+  });
+
+});
+
+//Update controls in Scene - Recurring method
+var start = function () {
+  requestAnimationFrame( start );
+  controls.update();
+  renderer.render(scene, camera);
+};
+
+//Initiat Scene and Object
+start();
