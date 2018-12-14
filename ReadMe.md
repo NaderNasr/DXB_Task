@@ -11,6 +11,10 @@
 
 `npm install http-server -g`
 
+### if your mac gives you access error apply
+
+`sudo sudo npm install http-server -g`
+
 ### To run (from your local directory):
 
 `http-server . -p 8000`
